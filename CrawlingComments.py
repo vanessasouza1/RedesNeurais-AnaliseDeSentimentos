@@ -10,6 +10,10 @@ from scrapy.selector import Selector
 # link 6: https://www.booking.com/reviews/br/hotel/olympia-residence.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f
 # link 7: https://www.booking.com/reviews/br/hotel/nb-hoteis.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f
 
+#####Testes Positivos
+#link 1 : https://www.booking.com/reviews/br/hotel/sombra-e-agua-fresca.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f
+#link 2: https://www.booking.com/reviews/br/hotel/zii-palmas-palmas1.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f
+
 
 
 ###################Links Negativos###################
@@ -22,18 +26,17 @@ from scrapy.selector import Selector
 # link 7: https://www.booking.com/reviews/br/hotel/portal-torres.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f
 # link 8: https://www.booking.com/reviews/br/hotel/piacenza.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f
 
+###Testes negativos
+#link 1 : https://www.booking.com/reviews/br/hotel/zoghbi-all-suites.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f
+#link 2: https://www.booking.com/reviews/br/hotel/zoghbi-all-suites.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f;customer_type=total;hp_nav=0;old_page=0;order=featuredreviews;page=2;r_lang=pt;rows=75&
 
 class MainSpider (scrapy.Spider):
     name = 'mainSpider'
-    start_urls = ['https://www.booking.com/reviews/br/hotel/piacenza.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f']
+    start_urls = ['https://www.booking.com/reviews/br/hotel/zoghbi-all-suites.pt-br.html?aid=381641;sid=941ae19fdb57991b30f93ef574319a9f;customer_type=total;hp_nav=0;old_page=0;order=featuredreviews;page=2;r_lang=pt;rows=75&']
 
     def parse(self, response):
         self.log('Eu estou em() :'.format(response.url))
-
-        #texts =response.xpath('//p[contains(@class, "review_pos")]').extract()
-
-        texts = response.xpath('//p[contains(@class, "review_neg")]/span/text()').extract()  
-
+        texts = response.xpath('//p[contains(@class, "review_neg")]/span/text()').extract()
 
         for text in texts:
             yield{
