@@ -30,9 +30,9 @@ class MainSpider (scrapy.Spider):
     def parse(self, response):
         self.log('Eu estou em() :'.format(response.url))
 
-        #texts =response.xpath('//p[contains(@class, "review_neg")]').extract() ### funcionou só q ta pegando as tags
+        #texts =response.xpath('//p[contains(@class, "review_pos")]').extract()
 
-        texts = response.xpath('//p[contains(@class, "review_neg")]/span/text()').extract()  ### funcionou só q ta pegando as tags
+        texts = response.xpath('//p[contains(@class, "review_neg")]/span/text()').extract()  
 
 
         for text in texts:
