@@ -3,6 +3,8 @@ import numpy as np
 import random
 from pybrain.datasets.classification import ClassificationDataSet
 #from pybrain.supervised.trainers.svmtrainer import SVMTrainer
+from pybrain.structure.modules.linearlayer import LinearLayer
+from pybrain.structure.modules.tanhlayer import TanhLayer
 
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
@@ -40,13 +42,13 @@ class BagOfWords:
 
 
 sentences = ['eu gosto de você', 'eu te odeio', 'eu gosto de ir ao shopping', 'eu detesto ir a praia', 'detesto ir ao shopping', 'estou satisfeita com o serviço',
-             'não voltarei', 'com certeza voltarei', 'gostei muito daqui', 'estão de parabéns']
+             'não voltarei', 'com certeza voltarei', 'gostei muito daqui', 'estão de parabéns', 'que lugar terrível', 'nunca mais volto aqui', 'muito bom, voltarei sempre']
 
 bow = BagOfWords()
 bow.build_vocab(sentences) #constroi vocabulario de palavras
 
 inputs = []
-outputs = [[0.99], [0.01], [0.99], [0.01], [0.01], [0.99], [0.01], [0.99], [0.99], [0.99]]
+outputs = [[0.99], [0.01], [0.99], [0.01], [0.01], [0.99], [0.01], [0.99], [0.99], [0.99], [0.01], [0.01], [0.99]]
 
 
 for sentenc in sentences:
@@ -74,7 +76,8 @@ dataTrain, dataTest = ds.splitWithProportion(0.8)
 print("dataTrain " + str(dataTrain))
 print("dataTest" + str(dataTest))
 
-network = buildNetwork(bow.get_len(), 5, 1, bias=True, hiddenclass=SigmoidLayer)  #constroi a rede
+network = buildNetwork(bow.get_len(), 5, 1, bias=True, hiddenclass=TanhLayer)  #constroi a rede
+#SigmoidLayer, LinearLayer, TanhLayer
 
 #modificaparam = SVMTrainer(network)
 
@@ -106,24 +109,19 @@ back.trainUntilConvergence(maxEpochs=None, verbose=True, continueEpochs=10, vali
     ##############################################################################
 
 
-
-
-#for sent in test:  #Pega cada sentença do teste e faz bag of words com cada uma
-    #vector = bow.toarray(sent)
-
-    #computed = network.activate(list(vector)) # valor computado final entre 0 e 1
-
-computed = network.activateOnDataset(dataTest) #treina o conjunto de teste
+computed = network.activateOnDataset(dataTest)
 target = dataTest['target']
 sentiment = None
 
-if computed[0] >= 0.6:
-    sentiment = 'positive'
-else:
-    sentiment = 'negative'
-
-
 for i in range(0, dataTest.getLength()):
+    if computed[i] >= 0.5:
+        sentiment = 'positive'
+    else:
+        sentiment = 'negative'
     print(computed[i], sentiment)
 print(target)
+
+# for i in range(0, dataTest.getLength()):
+#     print(computed[i], sentiment)
+# print(target)
 
