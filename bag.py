@@ -34,22 +34,22 @@ class BagOfWords:
         return comments
 
     def toUtf(self, unicode):
-        text = []
-        sentence = str(unicode)
-        text = sentence.encode('utf-8')
-        print text
+        text = ""
+        for comment in unicode:
+            sentence = comment.get('Text')
+            text = text + " " + str(sentence.encode('utf-8'))
+
         #for comment in unicode:
 
          #   sentence = comment.get('Text')
           #  coded = sentence.encode(sys.stdout.encoding)
            # text.append(coded)
-
-
         return text
 
     def build_vocab(self, sentences):
         for sentence in sentences:
             for word in sentence.split(' '):
+
                 if word not in self.vocab:
                     self.vocab.append(word)
         self.vocab.sort()
@@ -62,7 +62,7 @@ class BagOfWords:
 
         for word in words:
             for i, _word in enumerate(self.vocab):
-                #print(i, _word)
+                print(i, _word)
                 if _word == word:
                         vector[i] = 1.0
         return vector
@@ -70,28 +70,29 @@ class BagOfWords:
     def get_len(self):
         return len(self.vocab)
 
+    
+
 
 bow = BagOfWords() # A classe que vai ter o bag of words
 
 sentencesn = bow.readArchive("BaseComentariosNegativos.json")
 
-print sentencesn
-
 sentencesp = bow.readArchive("BaseComentariosPositivos.json")
 
-print sentencesp
 
 negative = bow.toUtf(sentencesn)
 positive = bow.toUtf(sentencesp)
-sentences = ""
 
-sentences = sentences + " " + str(negative) + " " + str(positive)
+sentences = []
 
-print sentences
+sentences.append(negative)
+sentences.append(positive)
+#sentences = sentences + " " + negative + " " + positive
+
 
 bow.build_vocab(sentences)
 
-print sentences
+
 #sentences = ['eu gosto de você', 'eu te odeio', 'eu gosto de ir ao shopping', 'eu detesto ir a praia', 'amo ir ao shopping']
 #sentences = json.loads(open("BaseComentariosNegativos.json", "r").read())
 test = ['gosto de você', 'amo comprar roupas', 'odeio ir a escola', 'garoto malvado']
@@ -104,9 +105,10 @@ inputs = []
 outputs = [[0.99], [0.01], [0.99], [0.01], [0.99]]
 
 #for cont in sentences:
-#    outputs[cont] = [0.0]
+ #   outputs[cont] = [0.0]
 
 for sentenc in sentences:
+
     vectors = bow.toarray(sentenc)
 
     sample = []
@@ -114,7 +116,7 @@ for sentenc in sentences:
         sample.append(num)
     inputs.append(sample)
 
-print()
+
 ds = SupervisedDataSet(bow.get_len(), 1)
 print("input " + str(inputs))
 print(outputs)
@@ -128,8 +130,8 @@ network = buildNetwork(bow.get_len(), 5, 1, bias=True, hiddenclass=SigmoidLayer)
 
 back = BackpropTrainer(network, ds)
 
-#back.trainEpochs(3000)
-for i in range(3000):
+back.trainEpochs(3)
+for i in range(3):
     error = back.train()
 
     if error < 0.01:
