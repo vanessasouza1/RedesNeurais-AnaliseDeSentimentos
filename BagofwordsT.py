@@ -1,4 +1,6 @@
 import json
+
+import numpy
 import numpy as np
 import random
 from pybrain.datasets.classification import ClassificationDataSet
@@ -60,51 +62,62 @@ for sentenc in sentences:
     inputs.append(sample)
 
 
-print(outputs)
+#print(outputs)
 
 
 ds = SupervisedDataSet(bow.get_len(), 1)
 
 for i, j in zip(inputs, outputs):
-    print(i)
-    print(j)
+   # print(i)
+    #print(j)
     ds.addSample(tuple(i), tuple(j))
 
-# DIvide em treino e teste
+# Divide em treino e teste
 dataTrain, dataTest = ds.splitWithProportion(0.8)
 
-print("dataTrain " + str(dataTrain))
-print("dataTest" + str(dataTest))
+#print("dataTrain " + str(dataTrain))
+#print("dataTest" + str(dataTest))
 
 network = buildNetwork(bow.get_len(), 5, 1, bias=True, hiddenclass=TanhLayer)  #constroi a rede
-#SigmoidLayer, LinearLayer, TanhLayer
+#Funções de ativação para variar no teste  - SigmoidLayer, LinearLayer, TanhLayer
 
-#modificaparam = SVMTrainer(network)
 
-lista = []
 
-#for i in range(0, bow.get_len()):
- #   lista.append(random.random())
+########################################## Adicionar pesos iniciais ################
+print(network.params)
 
-print(lista)
+new_weights = []
 
-#modificaparam.__setattr__('weight', lista)
+for i in range(0, len(network.params)):  # gera pesos aleatorios entre 0 e 1 pode modificar depois pra outros intervalos pra ver a diferença, por exemplo intervalos com numeros grandes
+    new_weights.append(random.random())
+    #Testes -- Variar o random dos pesos
+    #  o atual é entre zero e um mas para outros valores é so colocar uniform(a, b) no lugar do random()
 
-# tem taxa de aprendizado
+print(len(network.params))
+
+network._setParameters(new_weights)
+
+print(network.params)
+
+###############################################################################################################
+
+#taxa se aprendizado
 back = BackpropTrainer(network, dataset=dataTrain, learningrate=0.01, lrdecay=1.0, momentum=0.0, verbose=False, batchlearning=False, weightdecay=0.0)
+# variar learningrate  - 0.1 , 1.0, 0.001
+
 
 ##################Treina com teste treino e validação#################
-back.trainUntilConvergence(maxEpochs=None, verbose=True, continueEpochs=10, validationProportion=0.25)
+#back.trainUntilConvergence(maxEpochs=None, verbose=True, continueEpochs=10, validationProportion=0.25)
 ########################################################
 
 
 ##########################   Treino só com conj de testes e treino#############################
-# for i in range(3000):
-#     error = back.train() #quando é só treino e teste usa esse
-#
-#     if error < 0.01:
-#         break
-#     print('Epoch: ' + str(i) + 'Error: ' + str(error))
+for i in range(3000):
+     error = back.train() #quando é só treino e teste usa esse
+
+     if error < 0.01:
+         break
+     print('Epoch: ' + str(i) + 'Error: ' + str(error))
 
     ##############################################################################
 
@@ -121,7 +134,4 @@ for i in range(0, dataTest.getLength()):
     print(computed[i], sentiment)
 print(target)
 
-# for i in range(0, dataTest.getLength()):
-#     print(computed[i], sentiment)
-# print(target)
 
